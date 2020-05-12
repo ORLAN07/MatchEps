@@ -1,0 +1,12 @@
+type Eps {
+  idEps: ID
+  code: String
+  name: String
+  generalAddress: String
+  idDepartment: String
+  state: Boolean
+}
+
+type Query {
+  findAllEps: [Eps]
+}
