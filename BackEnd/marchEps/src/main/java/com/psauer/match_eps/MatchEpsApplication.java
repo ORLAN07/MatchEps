@@ -1,8 +1,10 @@
 package com.psauer.match_eps;
 
 import com.coxautodev.graphql.tools.SchemaParser;
+import com.psauer.match_eps.Repository.CommentRepository;
 import com.psauer.match_eps.exception.GraphQLErrorAdapter;
 import com.psauer.match_eps.Repository.EpsRepository;
+import com.psauer.match_eps.resolver.Mutation;
 import com.psauer.match_eps.resolver.Query;
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
@@ -31,6 +33,9 @@ public class MatchEpsApplication {
 	@Autowired
 	EpsRepository epsRepository;
 
+	@Autowired
+	CommentRepository commentRepository;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(MatchEpsApplication.class, args);
@@ -40,7 +45,7 @@ public class MatchEpsApplication {
 	public ServletRegistrationBean servletRegistrationBean() {
 
 		GraphQLSchema schema  = SchemaParser.newParser()
-				.resolvers(query(epsRepository))
+				.resolvers(mutation(commentRepository, epsRepository), query(epsRepository, commentRepository))
 				.file("graphql/eps.graphqls")
 				.build().makeExecutableSchema();
 		ExecutionStrategy executionStrategy = new AsyncExecutionStrategy();
@@ -76,8 +81,13 @@ public class MatchEpsApplication {
 	}
 
 	@Bean
-	public Query query(EpsRepository epsRepository) {
-		return new Query(epsRepository);
+	public Mutation mutation( CommentRepository commentRepository, EpsRepository epsRepository) {
+		return new Mutation(commentRepository, epsRepository);
+	}
+
+	@Bean
+	public Query query(EpsRepository epsRepository, CommentRepository commentRepository) {
+		return new Query(epsRepository, commentRepository);
 	}
 
 	@Bean

@@ -7,6 +7,20 @@ type Eps {
   state: Boolean
 }
 
+type Comment {
+  idComment: String
+  description: String
+  eps: Eps
+  author: String
+}
+
+
+
 type Query {
   findAllEps: [Eps]
+  findAllComments: [Comment]
+}
+
+type Mutation{
+  newComment(description: String!, idEps: Int!, author: String): Comment
 }
